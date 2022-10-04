@@ -3,6 +3,27 @@ Openfaas edge system with extended prometheus.
 
 # Development
 
+### KIND config
+
+#### Start kind with 2 nodes (control plane & worker)
+
+```sh
+kind create cluster --config additional_config/multi-node-cluster.yaml
+```
+
+#### Install Ingress & test it with some dummy app
+
+Install NGINX Ingress:
+```sh
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+```
+
+Install app which helps to test ingress:
+```sh
+kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
+```
+Test ingress - open in browser `localhost/foo` (you should get foo as a response)
+
 ### minikube configuration & instalation
 
 #### Start minikube:
