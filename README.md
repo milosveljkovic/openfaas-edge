@@ -31,7 +31,7 @@ Test ingress - open in browser `localhost/foo` (you should get foo as a response
 minikube start --addons=ingress
 ```
 
-#### Install openfaas:
+### Install openfaas:
 
 - Create namespaces for OpenFaaS core components and OpenFaaS Functions
   ```sh
@@ -74,7 +74,7 @@ As we will use Prometheus to decide when our cluster is overwhelmed, we have to 
 We should deploy `ClusterRole` and `ClusterRoleBinding` from `additiona_config` directory.
 
 ```sh
-kubectl create -f additiona_config/
+kubectl create -f additiona_config/PrometheusClusterRole.yaml
 ```
 
 After deploying `ClusterRole` and `ClusterRoleBinding`, deployment `prometheus` from `openfaas` ns has to be updated.
@@ -96,6 +96,10 @@ serviceAccount: prometheus-sa
 Prometheus use exporters for exporting existing metrics from third-party systems.
 
 We are using [Node exporter](https://github.com/prometheus/node_exporter) which can expose k8s nodes metrics (cpu/mem_usage etc).
+
+```sh
+kubectl create -f node-exporter/daemonset.yaml
+```
 
 If you want Prometheus to watch those exporters, you have to update prometheus configmap.
 
