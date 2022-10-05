@@ -10,7 +10,13 @@ Openfaas edge system with extended prometheus.
 ```sh
 kind create cluster --config additional_config/multi-node-cluster.yaml
 ```
+#### Install ingress, openfaas, node-exporter with script
 
+```sh
+./scripts/setup.sh
+```
+
+#### MANUALLY
 #### Install Ingress & test it with some dummy app
 
 Install NGINX Ingress:
