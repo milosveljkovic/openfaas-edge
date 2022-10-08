@@ -123,5 +123,8 @@ prometheus-config.yaml
     - source_labels: [__meta_kubernetes_endpoints_name]
       regex: 'node-exporter'
       action: keep  
+    - source_labels: [__meta_kubernetes_endpoint_node_name]
+      action: replace
+      target_label: node_name
 ```
 
