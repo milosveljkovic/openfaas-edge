@@ -30,6 +30,8 @@ kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
 ```
 Test ingress - open in browser `localhost/foo` (you should get foo as a response)
 
+### If something went wrong just restart(delete) whole cluster!
+
 ### minikube configuration & instalation
 
 #### Start minikube:
