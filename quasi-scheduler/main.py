@@ -25,10 +25,6 @@ for result in total_mem_json:
     nodes_info[node_name] = NodeInfo(total_memory)
 
 
-def sortByScore(node):
-    return nodes_info[node].get_score()
-
-
 def identifyCriticalNodes(nodes_info):
     global reschedulingNeeded
     score = 0
