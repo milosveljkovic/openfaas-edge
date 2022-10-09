@@ -1,7 +1,7 @@
 # Deploy openfaas function which gets node-info
 # This function is used only for testing purpose
 # Before deploying you should port-forward gateway:8080
-# Before deploying faas-cli login -u amin -p <basic_auth_secret>
+# Before deploying faas-cli login -u admin -p <basic_auth_secret>
 # target: 50 RPS
 # 90% utilization of target
 
