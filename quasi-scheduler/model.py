@@ -6,7 +6,7 @@ class FaasFunc:
     def set_invocation(self, new_invocation):
         self.invocation = new_invocation
 
-    def set_invocation(self):
+    def get_invocation(self):
         return self.invocation
 
     def set_node(self, node):
