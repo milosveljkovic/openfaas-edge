@@ -70,22 +70,22 @@ minikube start --addons=ingress
   ```sh
   echo -n $PASSWORD | faas-cli login -g http://$OPENFAAS_URL -u admin — password-stdin
   ```
-At the end, in your minikube cluste you should have `two` namespaces: `openfaas` and `openfaas-fn`.
-Next to openfaas component, you can notice that Prometheus has been deployed and require additional configuration.
+At the end, in your minikube cluste you should have two namespaces: `openfaas` and `openfaas-fn`.
+Next to openfaas component, you will notice that Prometheus has been deployed and require additional configuration.
 
 #### Prometheus additional configuration
 
 Prometheus deployed alongside with openfaas is configured to works with two namespaces: `openfaas` and `openfaas-fn`.
 
-As we will use Prometheus to decide when our cluster is overwhelmed, we have to extend Prometheus configuration in a way to provide observation of full claster metrics (nodes metrics!!!).
+As we will use Prometheus to decide when our cluster is overwhelmed, we have to extend Prometheus configuration in a way to provide observation of full cluster metrics (nodes metrics).
 
-We should deploy `ClusterRole` and `ClusterRoleBinding` from `additiona_config` directory.
+We should deploy `ClusterRole` and `ClusterRoleBinding` from `additional_config` directory.
 
 ```sh
 kubectl create -f additiona_config/PrometheusClusterRole.yaml
 ```
 
-After deploying `ClusterRole` and `ClusterRoleBinding`, deployment `prometheus` from `openfaas` ns has to be updated.
+After deploying `ClusterRole` and `ClusterRoleBinding`, deployment `prometheus` from `openfaas` namespace has to be updated.
 
 prometheus.yaml
 ```yaml
