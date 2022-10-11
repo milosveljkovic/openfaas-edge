@@ -5,6 +5,9 @@ query = dict(
     mem_usage={
         "query": "(node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)) / node_memory_MemTotal_bytes * 100"
     },
+    mem_usage2={
+        "query": "sum(node_memory_MemTotal_bytes - (node_memory_MemFree_bytes + node_memory_Cached_bytes + node_memory_Buffers_bytes)) by (node_name)"
+    },
     cpu_usage={
         "query": '100 - avg(irate(node_cpu_seconds_total{job="node-exporter",mode="idle"}[5m])) by (node_name) * 100'
     },

@@ -6,7 +6,7 @@ from kubernetes import config, client
 from util import getScore
 from model import NodeInfo, FaasFunc
 
-CRITICAL_THRESHOLD = 50
+CRITICAL_THRESHOLD = 28
 
 config.load_kube_config()
 v1 = client.CoreV1Api()
@@ -44,16 +44,16 @@ def identifyCriticalNodes(nodes_info):
             reschedulingNeeded = True
 
 
-def rescheduleDeployment(api_v1, deployment, deployment_name, cnodes):
-    print("Update selectedNode propertie")
-    print(cnodes[0])
-    # kubernetes.io/hostname=kindfaas-worker
-    deployment.spec.template.spec.node_selector["kubernetes.io/hostname"] = cnodes[0]
+def rescheduleDeployment(api_v1, deployment, deployment_name, sorted_nodes):
+    print("Update selectedNode propertie on function.\n")
+    print("Function {} will be redeployed to node {}.\n".format(deployment_name, sorted_nodes[0]))
+
+    deployment.spec.template.spec.node_selector["kubernetes.io/hostname"] = sorted_nodes[0]
     resp = api_v1.patch_namespaced_deployment(
         name=deployment_name, namespace="openfaas-fn", body=deployment
     )
-    print("\n[INFO] deployment's container image updated.\n")
-    print("%s\t%s\t\t\t%s\t%s" % ("Namespace", "Name", "Node"))
+    print("\nDeployment's nodeSelector updated.\n")
+    print("%s\t%s\t\t\t%s" % ("Namespace", "Name", "Node"))
     print(
         "%s\t\t%s\t\t%s\n"
         % (
@@ -69,7 +69,6 @@ while True:
     reschedulingNeeded = False
     sortedNodesByScore = []
     nodes = []
-    # functions = []
     row = 0
 
     r1 = requests.get(url=const.url, params=const.query["mem_usage"])
@@ -94,9 +93,9 @@ while True:
         row = row + 1
 
     identifyCriticalNodes(nodes_info)
-    # if reschedulingNeeded:
     if reschedulingNeeded:
-        print("#####RESCHEDULING####")
+    # if True:
+        print("##### RESCHEDULING ####\n")
         r3 = requests.get(
             url=const.url, params=const.query["function_invocation_per_minut"]
         )
@@ -105,7 +104,7 @@ while True:
         sortedNodesByScore = sorted(
             nodes_info, key=lambda node_name: (nodes_info[node_name].get_score())
         )
-        print(sortedNodesByScore)
+        print("Sorted nodes by score: {}.\n".format(sortedNodesByScore))
         for result in functions_json:
             function_name = (
                 result["metric"].get("function_name", "").split(const.delimetar)[0]
@@ -114,40 +113,37 @@ while True:
             faas_functions[function_name] = FaasFunc(invocation)
 
         pod_list = v1.list_namespaced_pod("openfaas-fn")
+        # pod_list=api_v1.list_namespaced_deployment("openfaas-fn")
         for pod in pod_list.items:
             function_name = pod.metadata.labels["faas_function"]
-            faas_functions[function_name].set_node(pod.spec.node_name)
+            if function_name in faas_functions:
+                faas_functions[function_name].set_node(pod.spec.node_name)
         critical_functions = dict()
-        print(sortedNodesByScore[len(sortedNodesByScore) - 1])
+        print("Most critical node {}.\n".format(sortedNodesByScore[len(sortedNodesByScore) - 1]))
         for key in faas_functions:
-            print(faas_functions[key].get_node())
-            print(sortedNodesByScore[len(sortedNodesByScore) - 1])
-
             if (
                 faas_functions[key].get_node()
                 == sortedNodesByScore[len(sortedNodesByScore) - 1]
             ):
                 print(
-                    "Funtion {key} is on critical node {faas_functions[key].get_node()}"
+                    "Funtion {} is on critical node {}.\n".format(key, faas_functions[key].get_node())
                 )
                 critical_functions[key] = faas_functions[key].get_invocation()
 
         if bool(critical_functions):
-            print("There is one or more functions on critical nodes.")
+            print("Status DANGER.\n")
             sortedFunctioncsByInvocation = sorted(
                 critical_functions, key=lambda func_name: func_name[1], reverse=True
             )
-            print(sortedFunctioncsByInvocation)
+            print("Sorted functions by invocation: {}.\n".format(sortedFunctioncsByInvocation))
             deployment = api_v1.read_namespaced_deployment(
                 name=sortedFunctioncsByInvocation[0], namespace="openfaas-fn"
             )
             rescheduleDeployment(
                 api_v1, deployment, sortedFunctioncsByInvocation[0], sortedNodesByScore
             )
-            print(sortedNodesByScore)
         else:
-            print("All functions are executing on non critical nodes.")
-        print("AS")
+            print("Status GREEN")
 
     # TODO remove print, it is using for debugging
     print("\n[INFO] Memory and CPU usage in %.\n")
