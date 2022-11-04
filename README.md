@@ -128,3 +128,15 @@ prometheus-config.yaml
       target_label: node_name
 ```
 
+### OpenFaas notes
+
+When OpenFaas has been deployed, if you want to communicate with gateway, you should port-forward & faas-cli login:
+
+```sh
+kubectl port-forward svc/gateway -n openfaas 8080
+```
+
+```sh
+export OPENFAAS_URL=localhost:8080
+faas-cli login -u admin --password $PASSWORD
+```
