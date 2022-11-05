@@ -34,8 +34,6 @@ class Sensor(BaseModel):
     fridge: float
     wc: float         # wine cellar
 
-logging.basicConfig(level=logging.DEBUG)
-
 def handle(dict):
     """ Processing function
     Args:
@@ -46,7 +44,6 @@ def handle(dict):
       {'time': '2016-01-01 05:00:36', 'use': -1.0, 'gen': 0.00348333, 'dw': 3.33e-05, 'fu': 0.0207, 'fu2': 0.06191667, 'ho': 0.44263333, 'fridge': 0.12415, 'wc': 0.00698333}
     """
     json_req = json.loads(dict)
-    logging.debug("Proccessing called with:", json_req['data'])
     if 'data' in json_req:
         sd = json_req['data']
     else:
@@ -55,7 +52,6 @@ def handle(dict):
     # f = open("HomeC_short.csv", "r")
     # sd: str = f.readline().split(",")
     sd: str = sd.split(",")
-    logging.debug("Sensor data array: ", sd)
     sd = removeNaNs(sd)
     sd = formatAll(sd)
     sensor = Sensor (
@@ -70,6 +66,6 @@ def handle(dict):
       wc= sd[9]
     )
 
-    return sensor.dict()
+    return json.dumps(sensor.dict())
 
 # handle({"data": "1451624416,,0.003483333,,3.33E-05,0.0207,0.061916667,0.442633333,0.12415,0.006983333,0.013083333,0.000416667,0.00015,0,0.03135,0.001016667,0.004066667,0.001516667,0.003483333,36.14,clear-night,0.62,10,Clear,29.26,1016.91,9.18,cloudCover,282,0,24.4,0"})
