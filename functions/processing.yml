@@ -1,0 +1,12 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://localhost:8080
+functions:
+  processing:
+    lang: python3
+    handler: ./processing
+    image: milosveljkovic97/processing:0.1.1
+    environment:
+      write_debug: true
+

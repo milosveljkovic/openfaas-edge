@@ -136,7 +136,15 @@ When OpenFaas has been deployed, if you want to communicate with gateway, you sh
 kubectl port-forward svc/gateway -n openfaas 8080
 ```
 
+login to openfaas gateway:
+
 ```sh
 export OPENFAAS_URL=localhost:8080
 faas-cli login -u admin --password $PASSWORD
+```
+
+build, push (login to docker hub required) & deploy function:
+
+```sh
+faas-cli build -f function_name.yml && docker push milosveljkovic97/processing:0.1.1 && faas-cli deploy -f function_name.yml
 ```
