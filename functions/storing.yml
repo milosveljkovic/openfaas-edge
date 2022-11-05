@@ -1,0 +1,12 @@
+version: 1.0
+provider:
+  name: openfaas
+  gateway: http://localhost:8080
+functions:
+  storing:
+    lang: python3
+    handler: ./storing
+    image: milosveljkovic97/storing:0.1.0
+    environment:
+      write_debug: true
+
