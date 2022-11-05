@@ -1,45 +1,46 @@
 # Openfaas-edge system
-Openfaas edge system with extended prometheus.
+Openfaas edge system for smart-home.
 
 # Development
 
 ### KIND config
 
-#### Start kind with 2 nodes (control plane & worker)
+Start kind with 2 nodes (control plane & worker)
 
 ```sh
 kind create cluster --config additional_config/multi-node-cluster.yaml
 ```
-#### Install ingress, openfaas, node-exporter with script
+
+##### Automated
+
+The following script will prepare cluster for you (install ingress, openfaas, node-exporter):
 
 ```sh
 ./scripts/setup.sh
 ```
 
-#### MANUALLY
-#### Install Ingress & test it with some dummy app
+##### Manual
 
-Install NGINX Ingress:
-```sh
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-```
+If you decide to install each pre-req part manually, follow instructions bellow:
 
-Install app which helps to test ingress:
-```sh
-kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
-```
-Test ingress - open in browser `localhost/foo` (you should get foo as a response)
+First, install Ingress & test it with some dummy app
 
-### If something went wrong just restart(delete) whole cluster!
+**Install NGINX Ingress:**
 
-### minikube configuration & instalation
+  - Deploy ingress with following script:
+  ```sh
+  kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+  ```
 
-#### Start minikube:
-```sh
-minikube start --addons=ingress
-```
+- Install app which helps to test ingress:
+  ```sh
+  kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
+  ```
+Test ingress: open in browser `localhost/foo` (you should get foo as a response)
 
-### Install openfaas:
+**Note:** If something went wrong just restart (delete) whole cluster, then try again.
+
+**Install openfaas:**
 
 - Create namespaces for OpenFaaS core components and OpenFaaS Functions
   ```sh
@@ -65,29 +66,45 @@ minikube start --addons=ingress
   ```sh
   helm upgrade openfaas --install openfaas/openfaas --namespace openfaas --set functionNamespace=openfaas-fn --set basic_auth=true
   ```
-- Set the `OPENFAAS_URL` env-var export `OPENFAAS_URL=$(minikube ip):31112`
-- Finally once all the Pods are started you can login using the CLI
+
+**How to connect to openfaas:**
+- When OpenFaas has been deployed, if you want to communicate with gateway, you should port-forward gateway svc, then login using faas-cli login:
+  ```sh
+  kubectl port-forward svc/gateway -n openfaas 8080
+  ```
+- Set the `OPENFAAS_URL` env-var export `OPENFAAS_URL=localhost:8080`
+- Finally once all the Pods are up&running you can login using the CLI
   ```sh
   echo -n $PASSWORD | faas-cli login -g http://$OPENFAAS_URL -u admin — password-stdin
   ```
-At the end, in your minikube cluste you should have two namespaces: `openfaas` and `openfaas-fn`.
-Next to openfaas component, you will notice that Prometheus has been deployed and require additional configuration.
+At the end, in your KIND cluster you should have two namespaces: `openfaas` and `openfaas-fn`.
 
-#### Prometheus additional configuration
+**Openfaas notes:**
+
+Build, push (login to docker hub required) & deploy function:
+
+```sh
+faas-cli build -f function_name.yml && \
+docker push milosveljkovic97/function_name:TAG && \
+faas-cli deploy -f function_name.yml
+```
+
+Note that next to openfaas component, Prometheus has been deployed and require additional configuration.
+
+**Prometheus additional configuration:**
 
 Prometheus deployed alongside with openfaas is configured to works with two namespaces: `openfaas` and `openfaas-fn`.
 
 As we will use Prometheus to decide when our cluster is overwhelmed, we have to extend Prometheus configuration in a way to provide observation of full cluster metrics (nodes metrics).
 
 We should deploy `ClusterRole` and `ClusterRoleBinding` from `additional_config` directory.
-
 ```sh
 kubectl create -f additiona_config/PrometheusClusterRole.yaml
 ```
 
 After deploying `ClusterRole` and `ClusterRoleBinding`, deployment `prometheus` from `openfaas` namespace has to be updated.
 
-prometheus.yaml
+deployments/prometheus.yaml
 ```yaml
 kind: Deployment
 apiVersion: apps/v1
@@ -99,7 +116,7 @@ serviceAccountName: prometheus-sa
 serviceAccount: prometheus-sa
 ```
 
-#### Node exporter
+**Node exporter:**
 
 Prometheus use exporters for exporting existing metrics from third-party systems.
 
@@ -128,39 +145,21 @@ prometheus-config.yaml
       target_label: node_name
 ```
 
-### OpenFaas notes
+**Deploy PostgreSQL:**
 
-When OpenFaas has been deployed, if you want to communicate with gateway, you should port-forward & faas-cli login:
-
-```sh
-kubectl port-forward svc/gateway -n openfaas 8080
-```
-
-login to openfaas gateway:
+Faas-edge deeply depends on postgresql db, so we have to deploy it in our KIND cluster:
 
 ```sh
-export OPENFAAS_URL=localhost:8080
-faas-cli login -u admin --password $PASSWORD
+helm repo add bitnami https://charts.bitnami.com/bitnami && \
+helm install faas-edge-db bitnami/postgresql
 ```
 
-build, push (login to docker hub required) & deploy function:
-
-```sh
-faas-cli build -f function_name.yml && docker push milosveljkovic97/processing:0.1.1 && faas-cli deploy -f function_name.yml
-```
-
-### PostgreSQL notes
-
-NAME: faas-edge-db
-LAST DEPLOYED: /
-NAMESPACE: default
-CHART VERSION: 12.1.0
-APP VERSION: 15.0.0
+When db has been deployed, connect to it (instructions bellow) and execute query from db/faas-edge-db.sql script.
 
 PostgreSQL can be accessed via port 5432 on the following DNS names from within your cluster:
 
 ```sh
-faas-edge-db-postgresql.default.svc.cluster.local - Read/Write connection
+faas-edge-db-postgresql.default.svc.cluster.local
 ```
 
 To get the password for "postgres" run:
@@ -172,6 +171,5 @@ export POSTGRES_PASSWORD=$(kubectl get secret --namespace default faas-edge-db-p
 To connect to your database run the following command:
 
 ```sh
-kubectl port-forward --namespace default svc/faas-edge-db-postgresql 5432:5432 &
-PGPASSWORD="$POSTGRES_PASSWORD" psql --host 127.0.0.1 -U postgres -d postgres -p 5432
+kubectl port-forward --namespace default svc/faas-edge-db-postgresql 5432:5432
 ```
