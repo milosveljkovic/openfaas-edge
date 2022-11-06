@@ -173,3 +173,68 @@ To connect to your database run the following command:
 ```sh
 kubectl port-forward --namespace default svc/faas-edge-db-postgresql 5432:5432
 ```
+
+**Deploy smtp:**
+
+Smtp server relies on mysql, so we need to deploy that part first.
+
+```sh
+helm repo add bitnami https://charts.bitnami.com/bitnami && \
+helm install smtp-db-mysql bitnami/mysql
+```
+
+When db has been deployed, port-forward svc to localhost (then connect to it):
+
+```sh
+kubectl port-forward svc/smtp-db-mysql -n default 3306
+```
+
+Connection info:
+
+```
+ServerHost: localhost
+Port: 3306
+Database: (leave it empty)
+Username: root
+Password: find pass in k8s secret
+```
+
+When connected to db, execute script from db/smtp.sql.
+
+Before deploying smrt server, update config in smtp/smtp-dep.yaml file to meet your mysqlDB requirements.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smtp-config
+  namespace: default
+data:
+  config.json: |
+    {
+    "wwwAddress": "0.0.0.0",
+    "wwwPort": 8080,
+    "serviceAddress": "0.0.0.0",
+    "servicePort": 8085,
+    "smtpAddress": "0.0.0.0",
+    "smtpPort": 2500,
+    "dbEngine": "MySQL",
+    "dbHost": "smtp-db-mysql",
+    "dbPort": 3306,
+    "dbDatabase": "my_database",
+    "dbUserName": "root",
+    "dbPassword": "UPDATE_THIS_WITH_PASS_FROM_K8S_SECRET",
+    "maxWorkers": 1000
+    }
+```
+
+Then deploy it, and port-forward (choose different port if 8080 is taken):
+
+```sh
+kubectl port-forward svc/smtp-service -n default 8085
+kubectl port-forward svc/smtp-service -n default 8080 # 8081:8080
+```
+
+**Functions:**
+
+Update DB string in storing and reporting functions.

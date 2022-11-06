@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: smtp
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smtp
+  template:
+    metadata:
+      labels:
+        app: smtp
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: smtp-config
+            items:
+              - key: config.json
+                path: config.json
+            defaultMode: 420
+      containers:
+      - name: smtp
+        image: marcopas/docker-mailslurper
+        ports:
+        - containerPort: 8085
+        - containerPort: 8080
+        - containerPort: 2500
+        volumeMounts:
+          - name: config
+            readOnly: false
+            mountPath: /opt/mailslurper/config.json
+            subPath: config.json
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: smtp-service
+  namespace: default
+spec:
+  type: ClusterIP
+  selector:
+    app: smtp
+  ports:
+  - name: a
+    port: 8085
+    targetPort: 8085
+  - name: b
+    port: 8080
+    targetPort: 8080
+  - name: c
+    port: 2500
+    targetPort: 2500
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smtp-config
+  namespace: default
+data:
+  config.json: |
+    {
+    "wwwAddress": "0.0.0.0",
+    "wwwPort": 8080,
+    "serviceAddress": "0.0.0.0",
+    "servicePort": 8085,
+    "smtpAddress": "0.0.0.0",
+    "smtpPort": 2500,
+    "dbEngine": "MySQL",
+    "dbHost": "smtp-db-mysql",
+    "dbPort": 3306,
+    "dbDatabase": "my_database",
+    "dbUserName": "root",
+    "dbPassword": "LDL8a0k15V",
+    "maxWorkers": 1000
+    }
