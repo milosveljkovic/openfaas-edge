@@ -1,0 +1,5 @@
+spec:
+  template:
+    spec:
+      serviceAccountName: prometheus-sa
+      serviceAccount: prometheus-sa

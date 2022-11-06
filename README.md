@@ -3,6 +3,17 @@ Openfaas edge system for smart-home.
 
 # Development
 
+### K3S config
+
+Set-up your k3s cluster:
+
+sh
+```
+cd k3s && mkdir shared && vagrant up
+```
+
+When cluster has been deployed, deploy openfaas (you do not need ingress) and other stuf.
+
 ### KIND config
 
 Start kind with 2 nodes (control plane & worker)
@@ -99,7 +110,7 @@ As we will use Prometheus to decide when our cluster is overwhelmed, we have to 
 
 We should deploy `ClusterRole` and `ClusterRoleBinding` from `additional_config` directory.
 ```sh
-kubectl create -f additiona_config/PrometheusClusterRole.yaml
+kubectl create -f additional_config/PrometheusClusterRole.yaml
 ```
 
 After deploying `ClusterRole` and `ClusterRoleBinding`, deployment `prometheus` from `openfaas` namespace has to be updated.
