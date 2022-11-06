@@ -73,6 +73,6 @@ data:
     "dbPort": 3306,
     "dbDatabase": "my_database",
     "dbUserName": "root",
-    "dbPassword": "LDL8a0k15V",
+    "dbPassword": "root",
     "maxWorkers": 1000
     }

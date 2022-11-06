@@ -19,7 +19,7 @@ The following script will prepare cluster for you (install ingress, openfaas, no
 ./scripts/setup.sh
 ```
 
-##### Manual
+##### Manually
 
 If you decide to install each pre-req part manually, follow instructions bellow:
 
@@ -147,6 +147,14 @@ prometheus-config.yaml
 
 **Deploy PostgreSQL:**
 
+Fast way of doing it (required export KUBECONFIG): 
+
+```sh
+cd db && ./faas-edge-db.sh
+```
+
+but if you want to deploy it manually, go ahead:
+
 Faas-edge deeply depends on postgresql db, so we have to deploy it in our KIND cluster:
 
 ```sh
@@ -175,6 +183,14 @@ kubectl port-forward --namespace default svc/faas-edge-db-postgresql 5432:5432
 ```
 
 **Deploy smtp:**
+
+Run following script to set-up smtp stack with script (required export KUBECONFIG):
+
+```sh
+cd smtp && ./smtp.sh
+```
+
+or set-up smtp stack manually:
 
 Smtp server relies on mysql, so we need to deploy that part first.
 

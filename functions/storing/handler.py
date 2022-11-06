@@ -7,7 +7,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 def connectToDb():
   print("Connecting to db")
-  conn=psycopg2.connect("host=faas-edge-db-postgresql.default port=5432 dbname=postgres user=postgres password=BVHz1M9Fd1")
+  conn=psycopg2.connect("host=faas-edge-db-postgresql.default port=5432 dbname=postgres user=postgres password=postgres")
   cur=conn.cursor()
   return cur, conn
 

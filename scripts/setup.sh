@@ -41,20 +41,20 @@ if [ $? -gt 0 ]; then
   exit 1
 fi
 
-echo
-echo "Installing test app to make sure the ingress is working properly."
-echo
+# echo
+# echo "Installing test app to make sure the ingress is working properly."
+# echo
 
-kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
+# kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/usage.yaml
 
-if [ $? -gt 0 ]; then
-  echo "Somethin went wrong during test-app installation."
-  exit 1
-fi
+# if [ $? -gt 0 ]; then
+#   echo "Somethin went wrong during test-app installation."
+#   exit 1
+# fi
 
-echo
-echo "Test ingress. Open localhost/foo in browser!"
-echo
+# echo
+# echo "Test ingress. Open localhost/foo in browser!"
+# echo
 
 echo
 echo "Openfaas installation.."
