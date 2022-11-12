@@ -7,6 +7,24 @@ functions:
     lang: python3
     handler: ./director
     image: milosveljkovic97/director:0.1.1
+    annotations:
+      rescheduled/quasi: ''
+    environment:
+      write_debug: true
+  director1:
+    lang: python3
+    handler: ./director
+    image: milosveljkovic97/director:0.1.1
+    annotations:
+      rescheduled/quasi: ''
+    environment:
+      write_debug: true
+  director2:
+    lang: python3
+    handler: ./director
+    image: milosveljkovic97/director:0.1.1
+    annotations:
+      rescheduled/quasi: ''
     environment:
       write_debug: true
 

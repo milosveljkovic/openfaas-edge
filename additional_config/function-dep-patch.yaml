@@ -1,4 +1,7 @@
-
+metadata:
+  annotations:
+    rescheduled/quasi: ''
+    prometheus.io.scrape: 'false'
 spec:
   template:
     spec:

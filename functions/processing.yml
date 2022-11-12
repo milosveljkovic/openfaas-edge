@@ -7,6 +7,24 @@ functions:
     lang: python3
     handler: ./processing
     image: milosveljkovic97/processing:0.1.2
+    annotations:
+      rescheduled/quasi: ''
+    environment:
+      content_type: application/json
+  processing1:
+    lang: python3
+    handler: ./processing
+    image: milosveljkovic97/processing:0.1.2
+    annotations:
+      rescheduled/quasi: ''
+    environment:
+      content_type: application/json
+  processing2:
+    lang: python3
+    handler: ./processing
+    image: milosveljkovic97/processing:0.1.2
+    annotations:
+      rescheduled/quasi: ''
     environment:
       content_type: application/json
 

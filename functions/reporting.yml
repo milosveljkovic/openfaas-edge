@@ -7,4 +7,6 @@ functions:
     lang: python3
     handler: ./reporting
     image: milosveljkovic97/reporting:0.1.0
+    annotations:
+      rescheduled/quasi: ''
 

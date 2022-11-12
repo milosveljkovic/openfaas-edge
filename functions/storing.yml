@@ -7,6 +7,24 @@ functions:
     lang: python3
     handler: ./storing
     image: milosveljkovic97/storing:0.1.0
+    annotations:
+      rescheduled/quasi: ''
+    environment:
+      write_debug: true
+  storing1:
+    lang: python3
+    handler: ./storing
+    image: milosveljkovic97/storing:0.1.0
+    annotations:
+      rescheduled/quasi: ''
+    environment:
+      write_debug: true
+  storing2:
+    lang: python3
+    handler: ./storing
+    image: milosveljkovic97/storing:0.1.0
+    annotations:
+      rescheduled/quasi: ''
     environment:
       write_debug: true
 

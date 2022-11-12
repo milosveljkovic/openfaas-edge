@@ -9,6 +9,8 @@ helm install smtp-db-mysql bitnami/mysql --values ./smtp-sql-helm-values.yaml
 
 kubectl apply -f smtp-dep.yaml -n default
 
+sleep 30
+
 kubectl port-forward svc/smtp-service -n default 8085 &
 
 kubectl port-forward svc/smtp-service -n default 8081:8080

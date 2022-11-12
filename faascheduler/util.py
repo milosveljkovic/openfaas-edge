@@ -1,2 +1,2 @@
 def getScore(mem, cpu) -> float:
-    return (mem + cpu) / 2
+    return cpu

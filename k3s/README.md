@@ -7,19 +7,19 @@ If you are facing some issue with node-exporter's pods, run following:
 ssh into server using vagrant ssh
 
 ```sh
-vagratn sh server && sudo su && mount --make-rshared /
+vagrant ssh server && sudo su && mount --make-rshared /
 ```
 
 ssh into agent1 using vagrant ssh
 
 ```sh
-vagratn sh agent1 && sudo su && mount --make-rshared /
+vagrant ssh agent1 && sudo su && mount --make-rshared /
 ```
 
 ssh into agent2 using vagrant ssh
 
 ```sh
-vagratn sh agent2 && sudo su && mount --make-rshared /
+vagrant ssh agent2 && sudo su && mount --make-rshared /
 ```
 
 etc..
